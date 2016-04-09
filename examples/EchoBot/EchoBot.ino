@@ -51,7 +51,16 @@ void setup() {
   bot.begin();      // launch Bot functionalities
 }
 
+/********************************************
+ * EchoMessages - function to Echo messages *
+ ********************************************/
+void Bot_EchoMessages() {
 
+  for (int i = 1; i < bot.message[0][0].toInt() + 1; i++)      {
+    bot.sendMessage(bot.message[i][4], bot.message[i][5], "");
+  }
+  bot.message[0][0] = "";   // All messages have been replied - reset new messages
+}
 
 void loop() {
 
@@ -63,16 +72,6 @@ void loop() {
 }
 
 
-/********************************************
- * EchoMessages - function to Echo messages *
- ********************************************/
-void Bot_EchoMessages() {
-
-  for (int i = 1; i < bot.message[0][0].toInt() + 1; i++)      {
-    bot.sendMessage(bot.message[i][4], bot.message[i][5], "");
-  }
-  bot.message[0][0] = "";   // All messages have been replied - reset new messages
-}
 
 
 
