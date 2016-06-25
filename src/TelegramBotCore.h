@@ -45,11 +45,9 @@ class TelegramBotCore
   public:
     TelegramBotCore (String);
     virtual String sendGetToTelegram(String command) = 0;
-    virtual String sendPostToTelegram(String command, JsonObject& payload) = 0;
     void begin(void);
     bool getMe();
-    bool sendMessage(String chat_id, String text, String reply_markup);
-    bool sendPostMessage(JsonObject& payload);
+    void sendMessage(String chat_id, String text, String reply_markup);
     int getUpdates(int offset);
     telegramMessage messages[HANDLE_MESSAGES];
     int last_message_recived;
