@@ -69,8 +69,9 @@ void setup() {
   // attempt to connect to Wifi network:
   Serial.print("Connecting Wifi: ");
   Serial.println(ssid);
-  while (WiFi.begin(ssid, pass) != WL_CONNECTED) {
-    Serial.print(".");
+  WiFi.begin(ssid);
+  while ( WiFi.status() != WL_CONNECTED) {
+  Serial.print(".");
     delay(500);
   }
   Serial.println("");
@@ -79,7 +80,7 @@ void setup() {
   IPAddress ip = WiFi.localIP();
   Serial.println(ip);
   bot.begin();      // launch Bot functionalities
-  pinMode(2, OUTPUT); // initialize digital pin 2 as an output.
+  pinMode(13, OUTPUT); // initialize digital pin 2 as an output.
 }
 
 
