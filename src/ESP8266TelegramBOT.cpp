@@ -50,6 +50,8 @@ String TelegramBOT::connectToTelegram(String command)  {
     bool avail;
     // Connect with api.telegram.org       
     IPAddress server(149,154,167,198);
+    client.setFingerprint("BB DC 45 2A 07 E3 4A 71 33 40 32 DA BE 81 F7 72 6F 4A 2B 6B");
+    
     if (client.connect(server, 443)) {  
         //Serial.println(".... connected to server");
         String a="";
@@ -93,7 +95,7 @@ void TelegramBOT::getUpdates(String offset)  {
     String mess=connectToTelegram(command);       //recieve reply from telegram.org
     // parsing of reply from Telegram into separate received messages
     int i=0;                //messages received counter
-    if (mess!="") {
+    if (mess!=""  && (WiFi.status() == WL_CONNECTED)) {
             Serial.print("Sent Update request messages up to : ");
             Serial.println(offset);
             String a="";
@@ -153,7 +155,7 @@ void TelegramBOT::sendMessage(String chat_id, String text, String reply_markup) 
     bool sent=false;
    // Serial.println("SEND Message ");
     long sttime=millis();
-    if (text!="") {
+    if (text!=""  && (WiFi.status() == WL_CONNECTED)) {
 	    while (millis()<sttime+8000) {    // loop for a while to send the message
 		String command="bot"+_token+"/sendMessage?chat_id="+chat_id+"&text="+text+"&reply_markup="+reply_markup;
 		String mess=connectToTelegram(command);
