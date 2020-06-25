@@ -23,6 +23,8 @@
 
 
 #include "ESP8266TelegramBOT.h"
+#include <WiFiClientSecureBearSSL.h>
+
 
 
 TelegramBOT::TelegramBOT(String token, String name, String username)	{
@@ -50,6 +52,13 @@ String TelegramBOT::connectToTelegram(String command)  {
     bool avail;
     // Connect with api.telegram.org       
     IPAddress server(149,154,167,198);
+    
+    std::unique_ptr<BearSSL::WiFiClientSecure>client(new BearSSL::WiFiClientSecure);  client->setInsecure();
+  HTTPClient https;
+  
+  
+    /*client.setFingerprint("BB DC 45 2A 07 E3 4A 71 33 40 32 DA BE 81 F7 72 6F 4A 2B 6B");
+    
     if (client.connect(server, 443)) {  
         //Serial.println(".... connected to server");
         String a="";
@@ -75,7 +84,48 @@ String TelegramBOT::connectToTelegram(String command)  {
 		break;
 	    }
         }
+    }*/
+  
+  /*client->connect("149.154.167.198", 443);
+  if (!client->connected()) {
+    Serial.printf("*** Can't connect. ***\n-------\n");
+    return;
+  }*/
+  
+  
+ 
+  if (https.begin(*client, "https://api.telegram.org/"+command)) {  // HTTPS
+    
+    
+  //Serial.println("Connected!\n-------\nhttps://api.telegram.org/");
+ // Serial.println(command);
+  //client->write("GET /"+command);
+    
+    //Serial.println("[HTTPS] GET...");
+    int httpCode = https.GET();
+
+    // httpCode will be negative on error
+    if (httpCode > 0) {
+      // HTTP header has been send and Server response header has been handled
+      //Serial.printf("[HTTPS] GET... code: %d\n", httpCode);
+      // file found at server?
+      if (httpCode == HTTP_CODE_OK) {
+        String payload = https.getString();
+        Serial.println("[HTTPS] Received payload telegram: ");
+        mess=payload;
+        //Serial.println(String("1BTC = ") + payload + "USD");
+      }
+    } else {
+      Serial.printf("[HTTPS] GET telegram... failed, error: %s\n\r", https.errorToString(httpCode).c_str());
     }
+
+    https.end();
+  } else {
+    Serial.printf("[HTTPS] Unable to connect BEAR::SSL telegram\n\r");
+  }
+
+    
+    
     return mess;
 }
 
@@ -93,7 +143,7 @@ void TelegramBOT::getUpdates(String offset)  {
     String mess=connectToTelegram(command);       //recieve reply from telegram.org
     // parsing of reply from Telegram into separate received messages
     int i=0;                //messages received counter
-    if (mess!="") {
+    if (mess!=""  && (WiFi.status() == WL_CONNECTED)) {
             Serial.print("Sent Update request messages up to : ");
             Serial.println(offset);
             String a="";
@@ -153,7 +203,7 @@ void TelegramBOT::sendMessage(String chat_id, String text, String reply_markup) 
     bool sent=false;
    // Serial.println("SEND Message ");
     long sttime=millis();
-    if (text!="") {
+    if (text!=""  && (WiFi.status() == WL_CONNECTED)) {
 	    while (millis()<sttime+8000) {    // loop for a while to send the message
 		String command="bot"+_token+"/sendMessage?chat_id="+chat_id+"&text="+text+"&reply_markup="+reply_markup;
 		String mess=connectToTelegram(command);
